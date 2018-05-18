@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Natas: The First Five | Tim Collins</title>
+<meta name="generator" content="Jekyll v3.8.1" />
+<meta property="og:title" content="Natas: The First Five" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Natas is an online web security CTF hosted at OverTheWire.org. In this post we’ll go through the first few challenges…" />
+<meta property="og:description" content="Natas is an online web security CTF hosted at OverTheWire.org. In this post we’ll go through the first few challenges…" />
+<link rel="canonical" href="http://localhost:4000/2018/05/18/Natas.html" />
+<meta property="og:url" content="http://localhost:4000/2018/05/18/Natas.html" />
+<meta property="og:site_name" content="Tim Collins" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-05-18T00:00:00+10:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","headline":"Natas: The First Five","dateModified":"2018-05-18T00:00:00+10:00","datePublished":"2018-05-18T00:00:00+10:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2018/05/18/Natas.html"},"url":"http://localhost:4000/2018/05/18/Natas.html","description":"Natas is an online web security CTF hosted at OverTheWire.org. In this post we’ll go through the first few challenges…","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Tim Collins" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Tim Collins</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Natas: The First Five</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-05-18T00:00:00+10:00" itemprop="datePublished">May 18, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="level-0">Level 0</h2>
+<p>Opening http://natas0.natas.labs.overthewire.org and entering the username and password “natas0” we are presented with this page:</p>
+
+<p><img src="/img/natas/natas0.png" alt="natas0" /></p>
+
+<p>We’re told the password is on the page, but nothing we can see is obviously password looking… let’s check out the page’s source (ctrl + u in chrome or firefox):</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+<span class="c">&lt;!-- This stuff in the header has nothing to do with the level --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"http://natas.labs.overthewire.org/css/level.css"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"http://natas.labs.overthewire.org/css/jquery-ui.css"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"http://natas.labs.overthewire.org/css/wechall.css"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://natas.labs.overthewire.org/js/jquery-1.9.1.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://natas.labs.overthewire.org/js/jquery-ui.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">http://natas.labs.overthewire.org/js/wechall-data.js</span><span class="nt">&gt;&lt;/script&gt;&lt;script </span><span class="na">src=</span><span class="s">"http://natas.labs.overthewire.org/js/wechall.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span><span class="kd">var</span> <span class="nx">wechallinfo</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"level"</span><span class="p">:</span> <span class="s2">"natas0"</span><span class="p">,</span> <span class="s2">"pass"</span><span class="p">:</span> <span class="s2">"natas0"</span> <span class="p">};</span><span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;h1&gt;</span>natas0<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"content"</span><span class="nt">&gt;</span>
+You can find the password for the next level on this page.
+<span class="c">&lt;!--The password for natas1 is gtVrDuiDfck831PqWsLEZy5gyDz1clto --&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+<p><br /></p>
+
+<p>Looking at the source the first thing we come across is some code wrapped in a &lt;head&gt; tag. We use the header element in HTML as a container for metadata about the page, so it’s often a good place to look for clues. In this case the first line is a comment explicitly telling us the header has nothing to do with this level. While it’s good policy not to believe everything we read, let’s skip to the body and see if there’s anything juicy there. The fourth line in the body is a comment giving us the password! It doesn’t get much more juicy than that!</p>
+
+<p>Level 0 was a nice easy one to get us started, let’s crack on to level 1.</p>
+
+<hr />
+
+<p><br /></p>
+<h2 id="level-1">Level 1</h2>
+<p>This one looks a bit like the previous, except that right clicking has been disabled.</p>
+
+<p><img src="/img/natas/natas1.png" alt="natas1" /></p>
+
+<p>It’s a good idea to check that security policies are actually doing what they say on the tin. We confirm that right clicking is genuinely disabled by right clicking and getting this pop up, yep, looks like we can’t right click. This sort of functionality is the domain of javascript.</p>
+
+<p>A few possibilities to get around this jump to mind, we could:</p>
+<ul>
+  <li>Use a plug-in like noscript to disable JS running on this site.</li>
+  <li>Capture the raw request with Burp or another proxy (we’ll start doing this later, that’s when the fun stuff begins).</li>
+  <li>Use our keyboard shortcut to view the source (using ctrl + u in chrome) like last time.</li>
+</ul>
+
+<p>Let’s go with option three:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+<span class="c">&lt;!-- This stuff in the header has nothing to do with the level --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"http://natas.labs.overthewire.org/css/level.css"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"http://natas.labs.overthewire.org/css/jquery-ui.css"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"http://natas.labs.overthewire.org/css/wechall.css"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://natas.labs.overthewire.org/js/jquery-1.9.1.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://natas.labs.overthewire.org/js/jquery-ui.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">http://natas.labs.overthewire.org/js/wechall-data.js</span><span class="nt">&gt;&lt;/script&gt;&lt;script </span><span class="na">src=</span><span class="s">"http://natas.labs.overthewire.org/js/wechall.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span><span class="kd">var</span> <span class="nx">wechallinfo</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"level"</span><span class="p">:</span> <span class="s2">"natas1"</span><span class="p">,</span> <span class="s2">"pass"</span><span class="p">:</span> <span class="s2">"gtVrDuiDfck831PqWsLEZy5gyDz1clto"</span> <span class="p">};</span><span class="nt">&lt;/script&gt;&lt;/head&gt;</span>
+<span class="nt">&lt;body</span> <span class="na">oncontextmenu=</span><span class="s">"javascript:alert('right clicking has been blocked!');return false;"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;h1&gt;</span>natas1<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"content"</span><span class="nt">&gt;</span>
+You can find the password for the
+next level on this page, but rightclicking has been blocked!
+<span class="c">&lt;!--The password for natas2 is ZluruAthQk7Q2MqmDeTiUij2ZvWy2mBi --&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+<p><br />
+Once again the password for the next level is explicitly given in an html comment. Onto the next one!</p>
+
+<hr />
+
+<p><br /></p>
+<h2 id="level-2">Level 2</h2>
+<p><img src="/img/natas/natas2.png" alt="natas2" />
+The third level and the third time we’re presented with a page that looks much the same. This time it’s telling us that there’s nothing on this page, let’s check the source to make sure.</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+<span class="c">&lt;!-- This stuff in the header has nothing to do with the level --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"http://natas.labs.overthewire.org/css/level.css"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"http://natas.labs.overthewire.org/css/jquery-ui.css"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"http://natas.labs.overthewire.org/css/wechall.css"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://natas.labs.overthewire.org/js/jquery-1.9.1.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://natas.labs.overthewire.org/js/jquery-ui.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">http://natas.labs.overthewire.org/js/wechall-data.js</span><span class="nt">&gt;&lt;/script&gt;&lt;script </span><span class="na">src=</span><span class="s">"http://natas.labs.overthewire.org/js/wechall.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span><span class="kd">var</span> <span class="nx">wechallinfo</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">"level"</span><span class="p">:</span> <span class="s2">"natas2"</span><span class="p">,</span> <span class="s2">"pass"</span><span class="p">:</span> <span class="s2">"ZluruAthQk7Q2MqmDeTiUij2ZvWy2mBi"</span> <span class="p">};</span><span class="nt">&lt;/script&gt;&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;h1&gt;</span>natas2<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"content"</span><span class="nt">&gt;</span>
+There is nothing on this page
+<span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"files/pixel.png"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;&lt;/html&gt;</span>
+</code></pre></div></div>
+<p><br />
+Looks like the maker wasn’t lying to us.</p>
+
+<p>A good first step when we come across an unfamiliar website is to enumerate the contents we have access to on the server. We can manually try URIs like natas2.natas.labs.overthewire.org/robots.txt or /admin, directories or files we’ll commonly be interested in. On our current server all we’re getting back are 404s.</p>
+
+<p>If we didn’t have any hints now would be a good time to fire up a file and directory bruteforcer, but maybe there’s a better way here.
+We notice in the source there’s an image pixel.png being served, <code class="highlighter-rouge">&lt;img src="files/pixel.png"&gt;</code>. Let’s see if we can access the /files directory that contains the image.</p>
+
+<p><img src="/img/natas/natas2-2.png" alt="natas2-2" /></p>
+
+<p>Bingo. We have access to the /files directory, and what’s more we’re presented with a directory listing. That users.txt file looks interesting:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># username:password
+alice:BYNdCesZqW
+bob:jw2ueICLvT
+charlie:G5vCxkVV3m
+natas3:sJIJNW6ucpu6HPZ1ZAchaDtwd7oGrD14
+eve:zo4mJWyNj2
+mallory:9urtcpzBmH
+</code></pre></div></div>
+
+<p><br />
+And there’s the password! Time for level 3!</p>
+<hr />
+
+<p><br /></p>
+
+<h2 id="level-3">Level 3</h2>
+<p>As in the previous levels there’s nothing obvious on the landing page, but there seems to be a clue in an html comment:</p>
+
+<p><code class="highlighter-rouge">&lt;!-- No more information leaks!! Not even Google will find it this time... --&gt;</code></p>
+
+<p>That’s interesting. Generally search engines index sites using web crawlers. If we don’t want crawlers or other bots looking at certain areas of our sites we can let them know by using a <a href="https://en.wikipedia.org/wiki/Robots_exclusion_standard">robots.txt</a> file. Let’s see if this level has a robots.txt file. By navigating to to natas3.natas.labs.overthewire.org/robots.txt we see:</p>
+
+<pre><code class="language-txt">&gt;User-agent: *
+Disallow: /s3cr3t/
+</code></pre>
+<p>So the maker of the site is requesting bots to not visit the /s3cr3t/ directory, that’s definitely something we’ll want to have a look at:
+<br /></p>
+
+<p><img src="/img/natas/natas3-2.png" alt="natas3-2" /></p>
+
+<p>Once again we see the directory contains a user.txt file and inside we have the password for the next level:</p>
+
+<blockquote>
+  <p>natas4:Z9tkRkWmpt9Qr7XrR5jWRkgOU901swEZ</p>
+</blockquote>
+
+<p>Robots.txt files have their place, but it’s important to know their limitations. Entries are just requests to avoid assets, malicious bots can simply choose to ignore our requests. What’s more if we include assets that we want to remain hidden in a robots.txt file we’re almost <em>ensuring</em> they’ll be looked at by a manual adversary.</p>
+
+<hr />
+
+<p><br /></p>
+
+<h2 id="level-4">Level 4</h2>
+<p>Opening level 4 we see a message that authorised users should come from “natas5.natas.labs.overthewire.org”.</p>
+
+<p><img src="/img/natas/natas4-1.png" alt="natas4-1" /></p>
+
+<p>The idea with this level is to work out how the web server is identifying where we are coming from, and to spoof that identification so it appears we’re coming from Natas5. It’s a good bet that the server is using the <a href="https://en.wikipedia.org/wiki/HTTP_referer">HTTP referer</a> field to identify where we’re coming from, so let’s aim to intercept and modify the request we send. This is a job for Burp*. Setting up burp is outside of the scope of this writeup but there are lots of <a href="https://portswigger.net/burp/help/suite_gettingstarted">good guides</a> online.</p>
+
+<p>Once we have identified the request we want to modify from the “Site Map” screen we right click on the request and send it to repeater.</p>
+
+<p><img src="/img/natas/natas4-4.png" alt="natas4-3" /></p>
+
+<p>Repeater is split into two windows. The left window is our request which we can edit, and then resend with the “Go” button. The right window displays the response from the server:</p>
+
+<p><img src="/img/natas/natas4-3.png" alt="natas4-4" /></p>
+
+<p>We want to add a referer header, so we go to the “headers” tab on the left window and hit “add”. We can then add our referer header, note that we intentionally mispell “Referrer” as “Referer”, a hangover from a typo on an old RFC. Hitting go and examining the response window we see that we have been successful:</p>
+
+<p><img src="/img/natas/natas4-5.png" alt="natas4-5" /></p>
+
+<p>*Or Zap, Fiddler, or any number of other web proxies.</p>
+
+<hr />
+
+<p><br /></p>
+
+<p>That’s the first five levels of Natas done! We’ve gone from having the password handed to us in the page source, to some basic enumeration, to using a proxy to modify requests. In the next few levels we’ll keep up the burp work, and start to add some cookie editing, and source code auditing.</p>
+
+
+  </div><a class="u-url" href="/2018/05/18/Natas.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Tim Collins</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Tim Collins</li><li><a class="u-email" href="mailto:timcollinsw123@gmail.com">timcollinsw123@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://www.twitter.com/tim0x01"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">tim0x01</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
