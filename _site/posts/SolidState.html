@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>HackTheBox: Solid State | Tim Collins</title>
+<meta name="generator" content="Jekyll v3.8.1" />
+<meta property="og:title" content="HackTheBox: Solid State" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Solid State is an easy hackthebox box lol" />
+<meta property="og:description" content="Solid State is an easy hackthebox box lol" />
+<link rel="canonical" href="/posts/SolidState" />
+<meta property="og:url" content="/posts/SolidState" />
+<meta property="og:site_name" content="Tim Collins" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-05-20T00:00:00+10:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","url":"/posts/SolidState","headline":"HackTheBox: Solid State","dateModified":"2018-05-20T00:00:00+10:00","datePublished":"2018-05-20T00:00:00+10:00","mainEntityOfPage":{"@type":"WebPage","@id":"/posts/SolidState"},"description":"Solid State is an easy hackthebox box lol","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Tim Collins" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Tim Collins</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">HackTheBox: Solid State</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-05-20T00:00:00+10:00" itemprop="datePublished">May 20, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="enumeration">Enumeration</h2>
+<p>We’ll start off with nmap scans.</p>
+
+<p>My methodology on networks that we have good access to is to initially do a SYN scan of all ports and then do more thorough scanning of those we find to be open. It’s good practice to keep an eye on this initial scanning, if we see it’s running slowly it may be that we’re tripping a firewall.</p>
+
+<p>So we start off with a SYN scan (-sS), of all ports (-p-), there’s no DNS in this environment so let’s turn off name resolution (-n), and save output in all formats with the filename “allports” (-oA allports).</p>
+
+<p>nmap -n -p- -sS -oA allports 10.10.10.51:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Nmap 7.60 scan initiated Mon May 28 02:40:13 2018 as: nmap -n -p- -sS -oA allports 10.10.10.51
+Nmap scan report for 10.10.10.51
+Host is up (0.066s latency).
+Not shown: 65529 closed ports
+PORT     STATE SERVICE
+22/tcp   open  ssh
+25/tcp   open  smtp
+80/tcp   open  http
+110/tcp  open  pop3
+119/tcp  open  nntp
+4555/tcp open  rsip
+
+# Nmap done at Mon May 28 02:40:55 2018 -- 1 IP address (1 host up) scanned in 41.72 seconds
+</code></pre></div></div>
+
+<p>Now let’s enumerate these open ports (-p 22, 25, 80, 110, 119, 455) using service detection (-sV) and default scripts (-sC), saving all outputs with the filename “thorough” (-oA thorough) and with name resolution still off (-n):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Nmap 7.60 scan initiated Mon May 28 02:42:30 2018 as: nmap -p 22,25,80,110,119,4555 -sC -sV -oA thorough -n 10.10.10.51
+Nmap scan report for 10.10.10.51
+Host is up (0.065s latency).
+
+PORT     STATE SERVICE     VERSION
+22/tcp   open  ssh         OpenSSH 7.4p1 Debian 10+deb9u1 (protocol 2.0)
+| ssh-hostkey:
+|   2048 77:00:84:f5:78:b9:c7:d3:54:cf:71:2e:0d:52:6d:8b (RSA)
+|   256 78:b8:3a:f6:60:19:06:91:f5:53:92:1d:3f:48:ed:53 (ECDSA)
+|_  256 e4:45:e9:ed:07:4d:73:69:43:5a:12:70:9d:c4:af:76 (EdDSA)
+25/tcp   open  smtp        JAMES smtpd 2.3.2
+|_smtp-commands: solidstate Hello nmap.scanme.org (10.10.14.11 [10.10.14.11]),
+80/tcp   open  http        Apache httpd 2.4.25 ((Debian))
+|_http-server-header: Apache/2.4.25 (Debian)
+|_http-title: Home - Solid State Security
+110/tcp  open  pop3        JAMES pop3d 2.3.2
+119/tcp  open  nntp        JAMES nntpd (posting ok)
+4555/tcp open  james-admin JAMES Remote Admin 2.3.2
+
+# Nmap done at Mon May 28 02:42:57 2018 -- 1 IP address (1 host up) scanned in 26.92 seconds
+</code></pre></div></div>
+
+<p>So we have 6 ports open. From the service detection results it appears we have a mail server, running apache JAMES. Time to work out a plan of attack.</p>
+
+<p><strong>Port 22</strong> is showing a reasonably modern SSH service, this will be our lowest priority to look at.</p>
+
+<p><strong>Port 25</strong> is SMTP, we could see if <a href="https://pentestlab.blog/2012/11/20/smtp-user-enumeration/">SMTP enumeration</a> is a possibility, this is a medium priority.</p>
+
+<p><strong>Port 80</strong> is HTTP, having a quick look in a browser it looks like a basic web app, definitely something we’ll want to check out, we’ll note this down as a high priority and start nikto scanning in the background.</p>
+
+<p><strong>Port 110</strong> is POP3, but we don’t have any credentials, once again a low priority at the moment.</p>
+
+<p><strong>Port 119</strong> is NNTP, quick google indicates it’s something to do with usenet, we’ll say it’s a low priority for now.</p>
+
+<p><strong>Port 4555</strong> is remote admin for JAMES. Sirens should be going off when see the words remote and admin. Let’s make this our top priority.</p>
+
+<h2 id="poking-at-remote-admin">Poking at Remote Admin</h2>
+<p>Connecting to the port with netcat <code class="highlighter-rouge">nc -nv 10.10.10.51 4555</code> we’re prompted for a username and password.</p>
+
+<p>Trying admin/admin kicks us back to the start of the prompt where we can immediately try again. It doesn’t appear that there are cooldowns on repeated attempts so we can probably script a bruteforcer if we get stuck.</p>
+
+<p>Let’s quickly try the obvious candidates first, root/password, admin/password etc. We don’t have to try for long as root/root grants us access!</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>JAMES Remote Administration Tool 2.3.2
+Please enter your login and password
+Login id:
+root
+Password:
+root
+Welcome root. HELP for a list of commands
+</code></pre></div></div>
+
+<p>Help gives us a list of commands:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>help
+Currently implemented commands:
+help                                    display this help
+listusers                               display existing accounts
+countusers                              display the number of existing accounts
+adduser [username] [password]           add a new user
+verify [username]                       verify if specified user exist
+deluser [username]                      delete existing user
+setpassword [username] [password]       sets a user's password
+setalias [user] [alias]                 locally forwards all email for 'user' to 'alias'
+showalias [username]                    shows a user's current email alias
+unsetalias [user]                       unsets an alias for 'user'
+setforwarding [username] [emailaddress] forwards a user's email to another email address
+showforwarding [username]               shows a user's current email forwarding
+unsetforwarding [username]              removes a forward
+user [repositoryname]                   change to another user repository
+shutdown                                kills the current JVM (convenient when James is run as a daemon)
+quit                                    close connection
+</code></pre></div></div>
+
+<p>“Display existing accounts” sounds like the sort of thing we’d be interested in, and while we’re at it let’s change the password for each user to be their username:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>countusers
+Existing accounts 5
+
+listusers
+user: james
+user: thomas
+user: john
+user: mindy
+user: mailadmin
+
+setpassword james james
+Password for james reset
+
+setpassword thomas thomas
+Password for thomas reset
+
+setpassword john john
+Password for john reset
+
+setpassword mindy mindy
+Password for mindy reset
+
+setpassword mailadmin
+Password for mailadmin reset
+</code></pre></div></div>
+
+<p>So we now have username and passwords for a bunch of users. That POP3 port that we didn’t have credentials for might make itself useful after all!</p>
+
+<p>We can telnet to port 110 <code class="highlighter-rouge">telnet 10.10.10.51 110</code>. POP3 is an extremely simple protocol to interact with. From the <a href="https://www.ietf.org/rfc/rfc1939.txt">RFC</a> our commands are:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Minimal POP3 Commands:
+
+     USER name               valid in the AUTHORIZATION state
+     PASS string
+     QUIT
+     STAT                    valid in the TRANSACTION state
+     LIST [msg]
+     RETR msg
+     DELE msg
+     NOOP
+     RSET
+     QUIT
+</code></pre></div></div>
+
+<p>Logging in with each user and checking for email, we find for Mindy:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Return-Path: &lt;mailadmin@localhost&gt;
+Message-ID: &lt;16744123.2.1503422270399.JavaMail.root@solidstate&gt;
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Delivered-To: mindy@localhost
+Received: from 192.168.11.142 ([192.168.11.142])
+          by solidstate (JAMES SMTP Server 2.3.2) with SMTP ID 581
+          for &lt;mindy@localhost&gt;;
+          Tue, 22 Aug 2017 13:17:28 -0400 (EDT)
+Date: Tue, 22 Aug 2017 13:17:28 -0400 (EDT)
+From: mailadmin@localhost
+Subject: Your Access
+
+Dear Mindy,
+
+
+Here are your ssh credentials to access the system. Remember to reset your password after your first login.
+Your access is restricted at the moment, feel free to ask your supervisor to add any commands you need to your path.
+
+username: mindy
+pass: P@55W0rd1!2@
+
+Respectfully,
+James
+</code></pre></div></div>
+
+<h2 id="shell">Shell</h2>
+
+<p>To get a user shell we can simply log in via SSH using the credentials given in the email. From here we can cat the user flag.</p>
+
+<p>Halfway there!!</p>
+
+<p>https://speakerdeck.com/knaps/escape-from-shellcatraz-breaking-out-of-restricted-unix-shells</p>
+
+<h2 id="privelege-escalation">Privelege Escalation</h2>
+
+<h2 id="notes">Notes</h2>
+
+<p>Guessing the default creds for the remote admin tool was pure luck, a sensible next step would have been searching for JAMES exploits. <code class="highlighter-rouge">searchsploit apache james</code> shows us a python exploit https://www.exploit-db.com/exploits/35513/ We did’t have the requisite authenticated user at that moment, but reading through the exploit would have also given us the default creds “root” “root”.</p>
+
+<p>That exploit is also worth a</p>
+
+  </div><a class="u-url" href="/posts/SolidState" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Tim Collins</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Tim Collins</li><li><a class="u-email" href="mailto:timcollinsw123@gmail.com">timcollinsw123@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://www.twitter.com/tim0x01"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">tim0x01</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Security and Stuff</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
