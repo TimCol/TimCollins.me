@@ -174,4 +174,4 @@ And we're root! Job done. From here we can cat the root flag and call it a day.
 
 
 ## Notes
-We can have a good guess at what family of operating system is being used after the very first nmap scan. The TTL of a SYN-ACK packet is different between systems. In our case we had a ttl of 63, \*NIX systems set a TTL of 64, and the packet has crossed one network segment, so we can already make a good guess that we're looking at a \*NIX machine. For other TTL values see:  http://www.kellyodonnell.com/content/determining-os-type-ping
+We can have a good guess at what family of operating system is being used after the very first nmap scan. The TTL of a SYN-ACK packet is different between systems. In our case we had a ttl of 63, \*NIX systems set a TTL of 64, and the packet has crossed one network segment, so we can already make a good guess that we're looking at a \*NIX machine. For other TTL values see  [http://www.kellyodonnell.com/content/determining-os-type-ping](http://www.kellyodonnell.com/content/determining-os-type-ping)
