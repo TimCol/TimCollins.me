@@ -192,10 +192,8 @@ James
 
 To get a user shell we can simply log in via SSH using the credentials given in the email. From here we can cat the user flag.
 
-Halfway there. Stay posted for part 2 where we get full root credentials.
+Halfway there. Stay tuned for part two where we get full root credentials.
 
 ## Notes
 
 Guessing the default creds for the remote admin tool was pure luck, a sensible next step would have been searching for JAMES exploits. ```searchsploit apache james``` shows us a python exploit https://www.exploit-db.com/exploits/35513/ We did't have the requisite authenticated user at that moment, but reading through the exploit would have also given us the default creds "root" "root".
-
-That exploit is also worth a
