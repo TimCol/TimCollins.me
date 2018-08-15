@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "HackTheBox: Solid State"
-description: "Solid State is an easy hackthebox box lol"
+title: "HackTheBox: Solid State Boot2User"
+description: "hackthebox solid state walkthrough"
 thumb_image: "TODO"
 tags: [web, ctf, overthewire]
 permalink: /posts/SolidState
@@ -192,16 +192,7 @@ James
 
 To get a user shell we can simply log in via SSH using the credentials given in the email. From here we can cat the user flag.
 
-Halfway there!!
-
-
-
-https://speakerdeck.com/knaps/escape-from-shellcatraz-breaking-out-of-restricted-unix-shells
-
-## Privelege Escalation
-
-
-
+Halfway there. Stay posted for part 2 where we get full root credentials.
 
 ## Notes
 
