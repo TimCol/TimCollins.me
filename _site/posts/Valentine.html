@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>HackTheBox: Valentine | Tim Collins</title>
+<meta name="generator" content="Jekyll v3.8.1" />
+<meta property="og:title" content="HackTheBox: Valentine" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="hackthebox valentine walkthrough" />
+<meta property="og:description" content="hackthebox valentine walkthrough" />
+<link rel="canonical" href="/posts/Valentine" />
+<meta property="og:url" content="/posts/Valentine" />
+<meta property="og:site_name" content="Tim Collins" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-08-08T00:00:00+10:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","url":"/posts/Valentine","headline":"HackTheBox: Valentine","dateModified":"2018-08-08T00:00:00+10:00","datePublished":"2018-08-08T00:00:00+10:00","mainEntityOfPage":{"@type":"WebPage","@id":"/posts/Valentine"},"description":"hackthebox valentine walkthrough","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Tim Collins" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Tim Collins</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">HackTheBox: Valentine</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-08-08T00:00:00+10:00" itemprop="datePublished">Aug 8, 2018
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="enumeration">Enumeration</h2>
+
+<h4 id="port-scans">Port scans</h4>
+
+<p>Unless there is some form of rate limiting I like to initially scan all ports on CTF type boxes. It’s not uncommon to find some service running on a random high number port and if we can recognise that early we can save ourselves time later.</p>
+
+<p>We start off with a SYN scan (-sS), of all ports (-p-), there’s no DNS in this environment so let’s turn off name resolution (-n), and save output in all formats with the filename “allports” (-oA allports):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@kali: nmap -sS -p- -n -oA allports -e tun0 -vv 10.10.10.79
+
+# Nmap 7.70 scan initiated Wed Jul 18 03:46:04 2018 as: nmap -sS -p- -n -oA allports -e tun0 -vv 10.10.10.79
+Nmap scan report for 10.10.10.79
+Host is up, received reset ttl 63 (0.28s latency).
+Scanned at 2018-07-18 03:46:04 EDT for 338s
+Not shown: 65532 closed ports
+Reason: 65532 resets
+PORT    STATE SERVICE REASON
+22/tcp  open  ssh     syn-ack ttl 63
+80/tcp  open  http    syn-ack ttl 63
+443/tcp open  https   syn-ack ttl 63
+
+Read data files from: /usr/bin/../share/nmap
+# Nmap done at Wed Jul 18 03:51:42 2018 -- 1 IP address (1 host up) scanned in 338.06 seconds
+</code></pre></div></div>
+
+<p>We have three open ports, let’s try and enumerate some version information with nmap. So we look at ports 22,80 and 443 (-p 22,80,443) using service detection (-sV), saving all outputs with the filename “scripts” (-oA scripts) and with name resolution still off (-n):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Nmap 7.70 scan initiated Wed Jul 18 04:01:38 2018 as: nmap -sV -p22,80,443 -n -oA scripts -e tun0 -vv 10.10.10.79
+Nmap scan report for 10.10.10.79
+Host is up, received echo-reply ttl 63 (0.27s latency).
+Scanned at 2018-07-18 04:01:38 EDT for 17s
+
+PORT    STATE SERVICE  REASON         VERSION
+22/tcp  open  ssh      syn-ack ttl 63 OpenSSH 5.9p1 Debian 5ubuntu1.10 (Ubuntu Linux; protocol 2.0)
+80/tcp  open  http     syn-ack ttl 63 Apache httpd 2.2.22 ((Ubuntu))
+443/tcp open  ssl/http syn-ack ttl 63 Apache httpd 2.2.22 ((Ubuntu))
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+*Something fun to note at this point is that we can already make a good guess at what operating system we're looking at. Can you figure it out? Answer at the bottom.*
+
+Read data files from: /usr/bin/../share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Wed Jul 18 04:01:55 2018 -- 1 IP address (1 host up) scanned in 17.36 seconds
+</code></pre></div></div>
+<h4 id="web">Web</h4>
+
+<p>Web servers are always something we want to have a look at. Pointing our browser to 10.10.10.79 we’re served a landing page with this image:</p>
+
+<p><img src="/img/valentine/webfront.png" alt="webfront" /></p>
+
+<p>A bleeding heart… maybe this box has something to do with heartbleed, we’ll note that for later.</p>
+
+<p>Let’s quickly enumerate with gobuster and see if there’s anything more we should be looking at on the web ports. We’ll use a default kali wordlist called big.txt (-w /usr/share/wordlists/dirb/big.txt), with 50 concurrent threads (-t 50) at the server (-u 10.10.10.79):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@kali: gobuster -w /usr/share/wordlists/dirb/big.txt -u 10.10.10.79 -t 50 -f
+
+Gobuster v1.4.1              OJ Reeves (@TheColonial)
+=====================================================
+=====================================================
+[+] Mode         : dir
+[+] Url/Domain   : http://10.10.10.79/
+[+] Threads      : 50
+[+] Wordlist     : /usr/share/wordlists/dirb/big.txt
+[+] Status codes : 200,204,301,302,307
+[+] Add Slash    : true
+=====================================================
+/decode/ (Status: 200)
+/dev/ (Status: 200)
+/encode/ (Status: 200)
+/index/ (Status: 200)
+=====================================================
+</code></pre></div></div>
+
+<p>Checking the hits in our browser we see /decode and /encode appear to be some simple application, it looks like they’re encoding or decoding input to base64. Navigating to /dev/ we see it’s a directory containing notes.txt, and a file called “hype_key”:</p>
+
+<p><img src="/img/valentine/hype_key.png" alt="hype key" /></p>
+
+<p>Hype_key looks to be encoded in hexadecimal, all the characters are in the range 0-F. To confirm we can go to the Decoder tab in Burp Suite and enter the data before selecting “ASCII Hex” in the “Decode as” dropdown:</p>
+
+<p><img src="/img/valentine/decoder.png" alt="decoder" /></p>
+
+<p>That’s neat, we have an RSA key that requires a password. We also have whitespace every second character in our output that needs to be cleaned up. To get a usable key file we can echo the raw data, pipe it into <a href="https://en.wikipedia.org/wiki/Tr_(Unix)">tr</a> to remove the whitespace, then pipe into the xxd to convert from hex to ascii and finally redirect the ouput into a file:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo "2d 2d 2d..." | tr -d ' ' | xxd -r -p &gt; hype.key
+</code></pre></div></div>
+
+<p>So we have a key and can make a guess at a username (hype seems like a good first try). Our key is password protected. If we find a password maybe we’ll be able to use this key to SSH into the box… let’s keep poking around.</p>
+
+<h4 id="ssl">SSL</h4>
+
+<p>Earlier we saw a hint that the server might be vulnerable to heartbleed. We can use sslscan to get a whole load of information about the SSL server on port 443:</p>
+
+<p><img src="/img/valentine/sslscan.png" alt="sslscan" /></p>
+
+<p>Looks like this server is vulnerable.</p>
+
+<h2 id="exploitation">Exploitation</h2>
+<h4 id="heartbleed">Heartbleed</h4>
+
+<p>Googling for “heartbleed poc” we come across https://github.com/sensepost/heartbleed-poc. Running this proof of concept we see it’s dumping memory, but we don’t see anything in that memory that is useful for us:</p>
+
+<p><img src="/img/valentine/uselessheartbleed.png" alt="heartbleed" /></p>
+
+<p>At this point if we <a href="https://en.wikipedia.org/wiki/RTFM">RTFM</a> we’d notice a -n option in the PoC to take multiple heartbeats, hopefully returning multiple slices of memory. An uglier way of achieving this is to run the script multiple times in a bash loop and have each output appended to a file:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for i in {1..10}; do python heartbleed-poc.py 10.10.10.79 &gt;&gt; heartbleed.output; done
+</code></pre></div></div>
+
+<p>Looking at that output we see an interesting string that looks like a parameter being passed to the server.</p>
+
+<p><img src="/img/valentine/interestingheartbeat.png" alt="interesting heartbleed" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$text=aGVhcnRibGVlZGJlbGlldmV0aGVoeXBlCg==
+</code></pre></div></div>
+
+<p>When we see a string ending in two equals signs it’s often diagnostic of having been base64 encoded (which is further hinted at by the base64 encoder/decoder pages on the website). We can check that from the command line:</p>
+
+<p><img src="/img/valentine/b64.png" alt="there's our password" /></p>
+
+<p>Looks like we have a password to try!</p>
+
+<h4 id="ssh">SSH</h4>
+
+<p>After changing the permissions of our key we can successfully login via SSH and cat the user flag (I’ll leave this step to the reader).</p>
+
+<p><img src="/img/valentine/ssh.png" alt="SSH in" /></p>
+
+<h2 id="privelege-escalation">Privelege Escalation</h2>
+<p>Having SSH access allows us to upload enumeration scripts using SCP. One such script is  <a href="https://github.com/rebootuser/LinEnum">LinEnum.sh</a>. We SCP it to the server’s /tmp directory:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>scp -i hype.key LinEnum.sh 10.10.10.79:/tmp/
+</code></pre></div></div>
+
+<p>after chmodding the file to be executable and running it on the server we get a heap of information about the system. At the end of the output we see there’s a .bash_history file with some interesting content:</p>
+
+<p><img src="/img/valentine/linenum.png" alt="LinEnum output" /></p>
+
+<p>Looks like someone has created a tmux socket at /.devs/dev_sess. Let’s check out the permissions for that socket:</p>
+
+<p><img src="/img/valentine/devss.png" alt="devss" /></p>
+
+<p>So it’s owned by the root user, but the hype group has read/write access. We can connect to the socket with</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tmux -S /.devs/dev_sess
+</code></pre></div></div>
+<p>Let’s connect and see what user we are:</p>
+
+<p><img src="/img/valentine/rootshell.png" alt="root shell" /></p>
+
+<p>And we’re root! Job done. From here we can cat the root flag and call it a day.</p>
+
+<h2 id="notes">Notes</h2>
+<p>We can have a good guess at what family of operating system is being used after the very first nmap scan. The TTL of a SYN-ACK packet is different between systems. In our case we had a ttl of 63, *NIX systems set a TTL of 64, and the packet has crossed one network segment, so we can already make a good guess that we’re looking at a *NIX machine. For other TTL values see:  http://www.kellyodonnell.com/content/determining-os-type-ping</p>
+
+  </div><a class="u-url" href="/posts/Valentine" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Tim Collins</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Tim Collins</li><li><a class="u-email" href="mailto:timcollinsw123@gmail.com">timcollinsw123@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://www.twitter.com/tim0x01"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">tim0x01</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Security and Stuff</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
